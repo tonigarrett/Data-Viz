@@ -59,7 +59,7 @@ function setup() {
 
 // all works to here !!
 this.draw = function (obj) {
-  var y = obj.y;
+  //var ypos = obj.ypos;
   obj.width |= 30;
   var height = obj.height;
   var color = obj.color || 'pink';
@@ -78,9 +78,9 @@ this.draw = function (obj) {
 
   //x = obj.index * ( obj.width + obj.spacing);
   //y = (this.height/obj.height) *  (this.height - obj.height);
-  x = test[i] * obj.width; 
+  x = ints_total * obj.width; 
   y = this.height - obj.height;
-  rect(x, y, obj.width-1, obj.height);
+  rect(x, y, obj.width-1, height);
 
   // rect(55, 90, 20, 150);
   // rect(80, 190, 20, 50);

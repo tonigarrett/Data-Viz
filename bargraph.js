@@ -12,11 +12,15 @@ function formatDate(datestr){
   return newformat;
 }
 
+
 function setup() {
   var _dates = table.getColumn("date");
   var total = table.getColumn("total");
-  newDates = []
-  ints_total = []
+  var _rates = table.getColumn("rate");
+  newDates = [];
+  ints_total = [];
+  rates = [];
+
 
   for(var i=0; i < _dates.length; i++){
     var dt = formatDate(_dates[i]);
@@ -24,20 +28,8 @@ function setup() {
 
     ints_total.push(int);
     newDates.push(dt);
+    rates.push(_rates[i]);
   }
-
-  //var ctx = document.getElementById("chart").getContext("2d");
-  // var chart = new Chart(
-  //   ctx, {
-  //   type: "bar",
-  //   data: {
-  //     labels: newDates,
-  //     datasets: [{
-  //       label: "Total Volume",
-  //       data: ints_total
-  //     }]
-  //   }
-  // });
 
 }
 var myCanvas = document.getElementById("myCanvas");
@@ -45,7 +37,6 @@ myCanvas.width = 1024;
 myCanvas.height = 574;
 
 var ctx = myCanvas.getContext("2d");
-// }
 
 // helper functions
 function drawLine(ctx, startX, startY, endX, endY, color) {
