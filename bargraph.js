@@ -1,7 +1,13 @@
-var table;
+table = [];
 
 function preload() {
   table = loadTable("./data/triparty.csv", "csv", 'header')
+
+  myCanvas = document.getElementById("myCanvas");
+  myCanvas.width = 1024;
+  myCanvas.height = 574;
+  
+  ctx = myCanvas.getContext("2d");
 }
 
 function formatDate(datestr){
@@ -20,7 +26,9 @@ function setup() {
   newDates = [];
   ints_total = [];
   rates = [];
+console.log(loadTable);
 
+var data = {}
 
   for(var i=0; i < _dates.length; i++){
     var dt = formatDate(_dates[i]);
@@ -29,40 +37,47 @@ function setup() {
     ints_total.push(int);
     newDates.push(dt);
     rates.push(_rates[i]);
+    data[dt] = int
   }
 
-}
-var myCanvas = document.getElementById("myCanvas");
-myCanvas.width = 1024;
-myCanvas.height = 574;
 
-var ctx = myCanvas.getContext("2d");
+  var myBarchart = new Barchart(
+    {
+      canvas: myCanvas,
+      seriesName: "Total Volume (millions US$)",
+      padding: 50,
+      gridScale: 250, // gridlines every "" units
+      gridColor: "#eeeeee",
+      data: ints_total,
+      //data: ints_total,
+      colors: ["rgba(200, 100, 100, 0.4)"]
+    }
+  );
+  myBarchart.draw();
+
+}
 
 // helper functions
 function drawLine(ctx, startX, startY, endX, endY, color) {
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.beginPath();
-  ctx.moveTo(startX, startY);
-  ctx.lineTo(endX, endY);
-  ctx.stroke();
-  ctx.restore();
+  ctx.save(); // specifically to store and save these context within the function  
+  ctx.strokeStyle = color; // determines strokeline color
+  ctx.beginPath(); // line draw call 
+  ctx.moveTo(startX, startY); // starting point of line draw at x, y
+  ctx.lineTo(endX, endY); // end point of line draw at x, y
+  ctx.stroke(); // actual drawing 
+  ctx.restore(); // restores these colors within the function 
 }
 
-//modifies color settings 
-function drawBar(ctx, upperLeftCornerX, upperLeftCornerY, width, height, color) {
+// draws the rectangular bars to represent the bar graph using these 6 parameters referenced to the drawing context 
+function drawBar(ctx, upperLeftCornerX, upperLeftCornerY, width, height, color, label="hello") {
+  console.log("") // array of data =26
   ctx.save();
   ctx.fillStyle = color;
+  ctx.fillText("hello", this.canvas.width / 2, this.canvas.height);
   ctx.fillRect(upperLeftCornerX, upperLeftCornerY, width, height);
   ctx.restore();
 }
 
-var myVinyls = {
-  "January": 100,
-  "February": 280,
-  "March": 598,
-  "April": 128
-};
 
 var Barchart = function (options) {
   this.options = options;
@@ -81,10 +96,11 @@ var Barchart = function (options) {
     var canvasActualHeight = this.canvas.height - this.options.padding * 2;
     var canvasActualWidth = this.canvas.width - this.options.padding * 2;
 
-    //drawing the grid lines
+    //drawing the grid lines horizontally 
     var gridValue = 0;
     while (gridValue <= maxValue) {
       var gridY = canvasActualHeight * (1 - gridValue / maxValue) + this.options.padding;
+      var gridX = canvasActualWidth * (1 - gridValue / barSize) + this.options.padding;
       drawLine(
         this.ctx,
         0,
@@ -93,12 +109,15 @@ var Barchart = function (options) {
         gridY,
         this.options.gridColor
       );
+       
+      
 
       //writing grid markers
       this.ctx.save();
       this.ctx.fillStyle = this.options.gridColor;
       this.ctx.font = "bold 10px Arial";
       this.ctx.fillText(gridValue, 1, gridY - 2);
+      this.ctx.fillText(gridValue, 1, gridX - 2);
       this.ctx.restore();
 
       gridValue += this.options.gridScale;
@@ -117,9 +136,10 @@ var Barchart = function (options) {
         this.ctx,
         this.options.padding + barIndex * barSize,
         this.canvas.height - barHeight - this.options.padding,
-        barSize,
+        barSize-5, // allows gaps between each bar 
         barHeight,
-        this.colors[barIndex % this.colors.length]
+        this.colors[barIndex % this.colors.length],
+        categ
       );
 
       barIndex++;
@@ -127,24 +147,41 @@ var Barchart = function (options) {
 
     //drawing series name
     this.ctx.save();
-    this.ctx.textBaseline = "bottom";
-    this.ctx.textAlign = "center";
+    // this.ctx.textBaseline = "bottom";
+    this.ctx.textAlign = "center"; // position of title or series name
     this.ctx.fillStyle = "#000000";
-    this.ctx.font = "bold 14px Arial";
-    this.ctx.fillText(this.options.seriesName, this.canvas.width / 2, this.canvas.height);
+    this.ctx.font = "12px Arial";
+    this.ctx.fillText(this.options.seriesName, this.canvas.width / 2, this.canvas.height/25);
+    this.ctx.fillText(newDates[3], this.canvas.width/2, this.canvas.height-50)
     this.ctx.restore();
+
+    for(var i=0; i<newDates.length; i++) {
+      font = 10;
+      this.ctx.save();
+      this.ctx.translate(font, barSize);
+      this.ctx.rotate(-Math.PI/2);
+      this.ctx.textAlign = "center";
+      this.ctx.fillStyle = "grey";
+      this.ctx.font = font + "px Arial";
+      this.ctx.fillText(newDates, -50, 300);
+    };
+    
+
+
 
     //draw legend
     barIndex = 0;
     var legend = document.querySelector("legend[for='myCanvas']");
     var ul = document.createElement("ul");
     legend.append(ul);
-    for (categ in this.options.data) {
-      var li = document.createElement("li");
+    //for (categ in this.options.data) {
+    for(newDates in this.options.data) {  
+    var li = document.createElement("li");
       li.style.listStyle = "none";
       li.style.borderLeft = "20px solid " + this.colors[barIndex % this.colors.length];
       li.style.padding = "5px";
-      li.textContent = categ;
+      //li.textContent = categ;
+      li.textContent = newDates;
       ul.append(li);
       barIndex++;
     }
@@ -152,16 +189,6 @@ var Barchart = function (options) {
 }
 
 
-var myBarchart = new Barchart(
-  {
-    canvas: myCanvas,
-    seriesName: "Total Volume (millions US$)",
-    padding: 20,
-    gridScale: 100, // gridlines every "" units
-    gridColor: "#eeeeee",
-    data: myVinyls,
-    //data: ints_total,
-    colors: ["#a55ca5", "#67b6c7", "#bccd7a", "#eb9743"]
-  }
-);
-myBarchart.draw();
+
+
+

@@ -10,7 +10,6 @@ function formatDate(datestr) {
   dates = regex.exec(datestr);
   var newformat = dates[2] + "-" + dates[3] + "-" + dates[1]
   return newformat;
-
 }
 
 function setup() {
@@ -20,74 +19,88 @@ function setup() {
   newDates = [];
   ints_total = [];
   rates = [];
-  console.log(rates);
+
+
 
   for (var i = 0; i < _dates.length; i++) {
     var dt = formatDate(_dates[i]);
     var int = parseFloat(total[i]);
-  
+    var rt = parseFloat(_rates[i]);
+    console.log(rates);
 
     ints_total.push(int)
     newDates.push(dt);
-    rates.push(_rates[i]);
+    rates.push(rt);
   }
+  // function breakdown() {
+  //   document.getElementById("demo").innerHTML = breakdown();
+  // }
+  // window.onLoad = function () {
+  //   var btn = document.getElementById("myButton");
+  //   btn.onclick = breakdown;
+  // }
 
-
-  var ctx = document.getElementById("chart").getContext("2d");
-  var chart = new Chart(ctx, {
-    type: "bar",
+  var repo = new Chart(document.getElementById("myChart").getContext("2d"), {
+    type: "bar", // defines overall chart type
     data: {
-      labels: newDates,
+      labels: newDates, // data for x-axis
       datasets: [{
-        label: "Total Volume (million)", // title of graph
+        type: "line", //defines dataset type 
+        label: "Rate", // legend
+        fill: false,
         hoverBackgroundColor: "#59597F",
         hoverBorderColor: "#c00",
-        backgroundColor: "rgba(204, 0, 0, 0.4)",
-        borderWidth: "2",
-        data: ints_total, // data values array being graphed
-      }, {
-        label: "Rates",
-        data: rates,
         backgroundColor: "grey",
         borderColor: "grey",
         borderWidth: 1,
-        type: "line",
-        YAxisID: "rate",
-        fill: false,
-        
+        data: rates, // data values array being graphed for bar graph
+        yAxisID: "rate-axis"
+      }, {
+        label: "Total Volume (millions US$)", // legend
+        fill: true,
+        data: ints_total, // data values being graphed for line chart
+        hoverBackgroundColor: "#59597F",
+        hoverBorderColor: "#c00",
+        backgroundColor: "rgba(204, 0, 0, 0.4)",
+        yAxisID: "volume-axis"
       }]
     },
+    // display properties
     options: {
+      legend: { position: "bottom", usePointStyle: true },
       responsive: true,
       maintainAspectRatio: true,
+      tooltips: { mode: "index", intersect: false }, // displays both data on hover
+      hover: { mode: "nearest", intersect: true },
       scales: {
+        xAxes: [{
+          display: true, stacked: true, scaleLabel: { display: false, labelString: "Date" }
+        }],
         yAxes: [{
-          id: "totalvolume",
-            display: true,
-              position: "left",
-                type: "linear",
-        scaleLabel: {
-          display: true,
-            labelString: "US$",
-              beginAtZero: true}
-        }, {
-          id: "rate",
-          display: true,
           type: "linear",
+          id: "volume-axis",
+          display: true,
+          position: "left",
+          scaleLabel: { display: true, labelString: "Total Volume" }
+        }, {
+          type: "linear",
+          id: "rate-axis",
+          display: true,
           position: "right",
-          ticks: { min: -0.6, max: 3, stepSize: 0.2},
-          gridLines: {
-            display: false
-          },
-          scaleLabel: {
-            display: true,
-            labelString: "Rate"
-          }
-
-
-        }]
+          stacked: false,
+          scaleLabel: { display: true, labelString: "Rate %" },
+          gridLines: { drawOnChartArea: false }
+        }],
+        
+      },
+      onClick: function(e, items){
+        console.log(e);
+        console.log(items);
+        var points = repo.getElementsAtEvent(e);
+        console.log(points[0]._index);
+        
       }
     }
   });
-}
 
+}

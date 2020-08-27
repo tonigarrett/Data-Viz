@@ -33,7 +33,7 @@ function drawPieSlice(ctx, centerX, centerY, radius, startAngle, endAngle, color
 }
 
 function setup(index) {
-  drawChartByIndex(15)
+  drawChartByIndex(1)
   
 }
 
@@ -128,7 +128,7 @@ function drawChartByIndex(index) {
           this.ctx.fillStyle = "#2E4053";
           this.ctx.font = "bold 14px Arial";
           this.ctx.fillText(categ + ": ", labelXPos - 30, labelYPos);
-          this.ctx.fillText("US$ " + val + " mln", labelXPos - 45, labelYPos + 20);
+          this.ctx.fillText("US$ " + val + " mln", labelXPos - 45, labelYPos + 15);
           this.ctx.fillText(date, pieRadius, pieRadius);
 console.log(date)
           
