@@ -1,8 +1,8 @@
 var table;
 
-function preload() {
-  table = loadTable("./data/triparty.csv", "csv", 'header')
-}
+// function preload() {
+//   table = loadTable("./data/triparty.csv", "csv", 'header')
+// }
 
 var myCanvas = document.getElementById("myCanvas");
 myCanvas.width = 400;
@@ -32,10 +32,10 @@ function drawPieSlice(ctx, centerX, centerY, radius, startAngle, endAngle, color
   ctx.fill();
 }
 
-function setup(index) {
-  drawChartByIndex(1)
+// function setup(index) {
+//   drawChartByIndex(1)
   
-}
+// }
 
 function drawChartByIndex(index) {
 

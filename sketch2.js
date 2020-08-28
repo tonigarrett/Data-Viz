@@ -98,7 +98,8 @@ function setup() {
         console.log(items);
         var points = repo.getElementsAtEvent(e);
         console.log(points[0]._index);
-        
+        drawChartByIndex(points[0]._index);
+        $("#myModal").modal();
       }
     }
   });
